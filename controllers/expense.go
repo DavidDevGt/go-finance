@@ -85,7 +85,16 @@ func GetWeeklySummary(c *gin.Context) {
 	var budget models.WeeklyBudget
 	err := database.DB.Where("week = ? AND year = ?", week, year).First(&budget).Error
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "No hay presupuesto registrado para esta semana"})
+		c.JSON(http.StatusNotFound, gin.H{
+			"error":       "No hay presupuesto registrado para esta semana",
+			"no_budget":   true,
+			"week":        week,
+			"year":        year,
+			"budget":      0,
+			"spent":       0,
+			"remaining":   0,
+			"over_budget": false,
+		})
 		return
 	}
 
