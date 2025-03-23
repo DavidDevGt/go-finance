@@ -1,0 +1,39 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go build outputs
+/bin/
+/build/
+/out/
+/*.test
+
+# Go workspace file
+go.work
+go.work.sum
+
+# IDE/editor config
+*.swp
+*.swo
+*.idea/
+*.vscode/
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Coverage reports
+*.cov
+coverage.out
+
+# Generated files
+*.prof
+*.coverprofile

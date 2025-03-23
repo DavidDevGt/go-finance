@@ -1,0 +1,282 @@
+basePath: /api
+definitions:
+  models.Expense:
+    properties:
+      amount:
+        type: number
+      category:
+        type: string
+      created_at:
+        type: string
+      date:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+      week:
+        type: integer
+    required:
+    - amount
+    - title
+    type: object
+  models.WeeklyBudget:
+    properties:
+      amount:
+        type: number
+      id:
+        type: integer
+      week:
+        type: integer
+      year:
+        type: integer
+    required:
+    - amount
+    - week
+    - year
+    type: object
+host: localhost:8055
+info:
+  contact:
+    email: davidgt@davidwebgt.com
+    name: David Dev GT
+    url: https://github.com/DavidDevGt
+  description: Esta API permite gestionar gastos y presupuestos semanales
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://github.com/DavidDevGt/go-finance
+  title: API de Finanzas Personales Semanales
+  version: "1.0"
+paths:
+  /api/budget:
+    post:
+      consumes:
+      - application/json
+      description: Define el monto máximo que se puede gastar en una semana específica.
+      parameters:
+      - description: Datos del presupuesto
+        in: body
+        name: budget
+        required: true
+        schema:
+          $ref: '#/definitions/models.WeeklyBudget'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WeeklyBudget'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Establecer o actualizar presupuesto semanal
+      tags:
+      - Budget
+  /api/budget/{year}/{week}:
+    get:
+      description: Devuelve cuánto se gastó en una semana y cuánto queda disponible.
+      parameters:
+      - description: Año
+        in: path
+        name: year
+        required: true
+        type: integer
+      - description: Semana del año
+        in: path
+        name: week
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener resumen del presupuesto semanal
+      tags:
+      - Budget
+  /api/expenses:
+    get:
+      description: Devuelve un listado de todos los gastos registrados.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Expense'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Listar todos los gastos
+      tags:
+      - Expenses
+    post:
+      consumes:
+      - application/json
+      description: Crea un gasto con título, monto, categoría y fecha.
+      parameters:
+      - description: Datos del gasto
+        in: body
+        name: expense
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Expense'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Crear un nuevo gasto
+      tags:
+      - Expenses
+  /api/expenses/{id}:
+    delete:
+      description: Elimina un gasto existente por ID.
+      parameters:
+      - description: ID del gasto
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Eliminar un gasto
+      tags:
+      - Expenses
+    get:
+      description: Devuelve el detalle de un gasto específico.
+      parameters:
+      - description: ID del gasto
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Expense'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener gasto por ID
+      tags:
+      - Expenses
+    put:
+      consumes:
+      - application/json
+      description: Actualiza los datos de un gasto existente.
+      parameters:
+      - description: ID del gasto
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Datos a actualizar
+        in: body
+        name: expense
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Expense'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Actualizar un gasto
+      tags:
+      - Expenses
+  /api/expenses/week/{week}/export:
+    get:
+      description: Genera y descarga un archivo CSV con todos los gastos de una semana
+        específica.
+      parameters:
+      - description: Semana del año
+        in: path
+        name: week
+        required: true
+        type: integer
+      produces:
+      - text/csv
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Exportar gastos a CSV por semana
+      tags:
+      - Expenses
+swagger: "2.0"
