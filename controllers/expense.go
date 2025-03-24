@@ -246,7 +246,7 @@ func CreateExpense(c *gin.Context) {
 		Description string  `json:"description"`
 		Amount      float64 `json:"amount" binding:"required"`
 		Category    string  `json:"category"`
-		Date        string  `json:"date" binding:"required"` // dd-mm-yyyy
+		Date        string  `json:"date" binding:"required"` // se espera en formato YYYY-MM-DD
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -254,9 +254,9 @@ func CreateExpense(c *gin.Context) {
 		return
 	}
 
-	parsedDate, err := time.Parse("02-01-2006", input.Date)
+	parsedDate, err := time.Parse("2006-01-02", input.Date)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Formato de fecha inválido, usa DD-MM-YYYY"})
+		respondWithError(c, http.StatusBadRequest, "Formato de fecha inválido, usa YYYY-MM-DD")
 		return
 	}
 
@@ -304,7 +304,7 @@ func UpdateExpense(c *gin.Context) {
 		Description string  `json:"description"`
 		Amount      float64 `json:"amount"`
 		Category    string  `json:"category"`
-		Date        string  `json:"date"` // dd-mm-yyyy
+		Date        string  `json:"date"` // se espera en formato YYYY-MM-DD
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -325,9 +325,9 @@ func UpdateExpense(c *gin.Context) {
 		expense.Category = input.Category
 	}
 	if input.Date != "" {
-		parsedDate, err := time.Parse("02-01-2006", input.Date)
+		parsedDate, err := time.Parse("2006-01-02", input.Date)
 		if err != nil {
-			respondWithError(c, http.StatusBadRequest, "Formato de fecha inválido, usa DD-MM-YYYY")
+			respondWithError(c, http.StatusBadRequest, "Formato de fecha inválido, usa YYYY-MM-DD")
 			return
 		}
 		expense.DateRaw = parsedDate

@@ -8,10 +8,28 @@ import (
 
 type FormattedDate time.Time
 
+// MarshalJSON muestra la fecha en formato "DD-MM-2006" al enviarla en la respuesta.
 func (f FormattedDate) MarshalJSON() ([]byte, error) {
 	t := time.Time(f)
 	formatted := t.Format("02-01-2006")
 	return []byte(`"` + formatted + `"`), nil
+}
+
+func (f *FormattedDate) UnmarshalJSON(data []byte) error {
+	s := string(data)
+	// Eliminar comillas
+	if len(s) >= 2 {
+		s = s[1 : len(s)-1]
+	}
+	t, err := time.Parse("2006-01-02", s)
+	if err != nil {
+		t, err = time.Parse("02-01-2006", s)
+		if err != nil {
+			return err
+		}
+	}
+	*f = FormattedDate(t)
+	return nil
 }
 
 func CalculateWeek(date time.Time) int {
